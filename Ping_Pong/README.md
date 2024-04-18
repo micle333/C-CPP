@@ -6,8 +6,15 @@ It's my adaptation of the famous ping pong game.
 
 To compile it please install *ncurses*
 
-  * brew install ncurses
+```bash
+   brew install ncurses
+```
   
-To run this game go to the right folder and type:
+To RUN this game, go to the right folder and type:
 
- * gcc -o pong pong_Pro.c  -lncurses && ./pong 
+```bash
+   gcc -o pong pong_Pro.c  -lncurses && ./pong 
+``` 
+
+First player can control his rocker throw:    **A/Z**             
+                                    Scond:    **K/M**
