@@ -2,7 +2,7 @@
 
 It's my adaptation of the famous ping pong game.
 
-  ![ping_pong](ping_screen.png)
+  ![ping_pong](Layer_4.jpg)
 
 To compile it please install *ncurses*
 
