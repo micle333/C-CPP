@@ -1,0 +1,819 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <limits.h>
+#include "s21_decimal.h"
+
+#test s21_add_test1
+  s21_decimal a = {{12345, 3, 0, 0}};
+  s21_decimal b = {{54321, 0, 0, 0}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_add(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 66666);
+  ck_assert_int_eq(c.bits[1], 3);
+  ck_assert_int_eq(c.bits[2], 0);
+  ck_assert_int_eq(c.bits[3], 0);
+
+#test s21_add_test2
+  s21_decimal a = {{0xFFFFFFFF, 0, 0, 0}};
+  s21_decimal b = {{1, 0, 0, 0}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_add(a, b, &c);
+
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 0);
+  ck_assert_int_eq(c.bits[1], 1);
+  ck_assert_int_eq(c.bits[2], 0);
+  ck_assert_int_eq(c.bits[3], 0);
+
+#test s21_add_test3
+  s21_decimal a = {{56, 4294967295, 0, 2147483648}};
+  s21_decimal b = {{69, 1, 0, 2147483648}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_add(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 125);
+  ck_assert_int_eq(c.bits[1], 0);
+  ck_assert_int_eq(c.bits[2], 1);
+  ck_assert_int_eq(c.bits[3], 2147483648);
+
+#test s21_add_test6
+  s21_decimal a = {{1234, 5678, 1000, 0}};
+  s21_decimal b = {{23, 123, 8, 2147483648}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_add(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 1211);
+  ck_assert_int_eq(c.bits[1], 5555);
+  ck_assert_int_eq(c.bits[2], 992);
+  ck_assert_int_eq(c.bits[3], 0);
+
+#test s21_add_test7
+  s21_decimal a = {{0x00000000, 0x00000000, 0x00000000, 0x00000000}};
+  s21_decimal b = {{0x00000000, 0x00000000, 0x00000000, 0x00000000}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_add(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 0x00000000);
+  ck_assert_int_eq(c.bits[1], 0x00000000);
+  ck_assert_int_eq(c.bits[2], 0x00000000);
+  ck_assert_int_eq(c.bits[3], 0x00000000);
+
+#test s21_add_test8
+  s21_decimal a = {{0x00000183, 0x00000000, 0x00000000, 0x00020000}};
+  s21_decimal b = {{0x00004DA6, 0x00000000, 0x00000000, 0x00020000}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_add(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 0x00004F29);
+  ck_assert_int_eq(c.bits[1], 0x00000000);
+  ck_assert_int_eq(c.bits[2], 0x00000000);
+  ck_assert_int_eq(c.bits[3], 0x00020000);
+
+#test s21_add_test9
+  s21_decimal a = {{0x77D5E3AA, 0x0000011C, 0x00000000, 0x00060000}};
+  s21_decimal b = {{0x00212155, 0x00000000, 0x00000000, 0x00070000}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_add(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 0xAE7C05F9);
+  ck_assert_int_eq(c.bits[1], 0x00000B1C);
+  ck_assert_int_eq(c.bits[2], 0x00000000);
+  ck_assert_int_eq(c.bits[3], 0x00070000);
+
+
+#test s21_sub_test1
+  s21_decimal a = {{55, 5432, 0, 0}};
+  s21_decimal b = {{22, 5422, 0, 0}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 33);
+  ck_assert_int_eq(c.bits[1], 10);
+  ck_assert_int_eq(c.bits[2], 0);
+  ck_assert_int_eq(c.bits[3], 0);
+
+#test s21_sub_test2
+  s21_decimal a = {{25, 1234, 0, 0}};
+  s21_decimal b = {{50, 1334, 0, 0}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 25);
+  ck_assert_int_eq(c.bits[1], 100);
+  ck_assert_int_eq(c.bits[2], 0);
+  ck_assert_int_eq(c.bits[3], 2147483648);
+
+#test s21_sub_test3
+  s21_decimal a = {{20, 2, 0, 2147483648}};
+  s21_decimal b = {{80, 0, 0, 2147483648}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 4294967236);
+  ck_assert_int_eq(c.bits[1], 1);
+  ck_assert_int_eq(c.bits[2], 0);
+  ck_assert_int_eq(c.bits[3], 2147483648);
+
+#test s21_sub_test4
+  s21_decimal a = {{175, 0, 0, 2147483648}};
+  s21_decimal b = {{60, 0, 0, 0}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 235);
+  ck_assert_int_eq(c.bits[1], 0);
+  ck_assert_int_eq(c.bits[2], 0);
+  ck_assert_int_eq(c.bits[3], 2147483648);
+
+#test s21_sub_test5
+  s21_decimal a = {{60, 0, 0, 2147483648}};
+  s21_decimal b = {{1000, 0, 0, 0}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 1060);
+  ck_assert_int_eq(c.bits[1], 0);
+  ck_assert_int_eq(c.bits[2], 0);
+  ck_assert_int_eq(c.bits[3], 2147483648);
+
+#test s21_sub_test6
+  s21_decimal a = {{65, 1, 0, 0}};
+  s21_decimal b = {{42, 5, 0, 2147483648}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 107);
+  ck_assert_int_eq(c.bits[1], 6);
+  ck_assert_int_eq(c.bits[2], 0);
+  ck_assert_int_eq(c.bits[3], 0);
+
+#test s21_sub_test7
+  s21_decimal a = {{65, 1234, 0, 0}};
+  s21_decimal b = {{423, 5, 2, 2147483648}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 488);
+  ck_assert_int_eq(c.bits[1], 1239);
+  ck_assert_int_eq(c.bits[2], 2);
+  ck_assert_int_eq(c.bits[3], 0);
+
+#test s21_sub_test8
+  s21_decimal a = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 2147483648}};
+  s21_decimal b = {{4, 4, 12, 0}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  //ck_assert_int_eq(res, 2);
+
+#test s21_sub_test9
+  s21_decimal a = {{6, 8, 0, 196608}};
+  s21_decimal b = {{12, 2, 0, 524288}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 599988);
+  ck_assert_int_eq(c.bits[1], 799998);
+  ck_assert_int_eq(c.bits[2], 0);
+  ck_assert_int_eq(c.bits[3], 524288);
+
+#test s21_sub_test10
+  s21_decimal a = {{450, 0, 0, 983040}};
+  s21_decimal b = {{3, 0, 0, 131072}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  //ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 3948404286);
+  ck_assert_int_eq(c.bits[1], 6984);
+  ck_assert_int_eq(c.bits[2], 0);
+  ck_assert_int_eq(c.bits[3], 2148466688);
+
+#test s21_sub_test11
+  s21_decimal a = {{0x00000183, 0x00000000, 0x00000000, 0x00020000}};
+  s21_decimal b = {{0x00004DA6, 0x00000000, 0x00000000, 0x00020000}};
+  s21_decimal c = {{0, 0, 0, 0}};
+  int res = s21_sub(a, b, &c);
+  ck_assert_int_eq(res, 0);
+  ck_assert_int_eq(c.bits[0], 0x00004C23);
+  ck_assert_int_eq(c.bits[1], 0x00000000);
+  ck_assert_int_eq(c.bits[2], 0x00000000);
+  ck_assert_int_eq(c.bits[3], 0x80020000);
+
+
+
+#test s21_is_equal_test1
+  s21_decimal dec1 = {0, 1, 0, 0};
+  dec1.bits[0] = 0b11111011111111111111111111111111;
+  dec1.bits[1] = 0b11111011111111111111111111111111;
+  dec1.bits[2] = 0b01111011111111111111111111111111;
+  dec1.bits[3] = 0;
+
+  s21_decimal dec2 = {0, 1, 0, 0};
+  dec2.bits[0] = 0b11111111111111101111111111111111;
+  dec2.bits[1] = 0b11111111111111101111111111111111;
+  dec2.bits[2] = 0b01111111111111101111111111111111;
+  dec2.bits[3] = 0;
+  int res = s21_is_equal(&dec1, &dec2);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_equal_test11
+  s21_decimal dec1 = {0, 1, 0, 0};
+  dec1.bits[0] = 0b11111111111111111111111111111111;
+  dec1.bits[1] = 0b11111111111111111111111111111111;
+  dec1.bits[2] = 0b01111111111111111111111111111111;
+  dec1.bits[3] = 0;
+
+  s21_decimal dec2 = {0, 1, 0, 0};
+  dec2.bits[0] = 0b11111111111111111111111111111111;
+  dec2.bits[1] = 0b11111111111111111111111111111111;
+  dec2.bits[2] = 0b01111111111111111111111111111111;
+  dec2.bits[3] = 0;
+  set_cap(&dec1, 4);
+  set_cap(&dec2, 4);
+  int res = s21_is_equal(&dec1, &dec2);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_equal_test12
+  s21_decimal dec1 = {0, 1, 0, 0};
+  dec1.bits[0] = 0b11111111111111111111111111111111;
+  dec1.bits[1] = 0b11111111111111111111111111111111;
+  dec1.bits[2] = 0b01111111111111111111111111111111;
+  dec1.bits[3] = 0;
+
+  s21_decimal dec2 = {0, 1, 0, 0};
+  dec2.bits[0] = 0b11111111111111111111111111111111;
+  dec2.bits[1] = 0b11111111111111111111111111111111;
+  dec2.bits[2] = 0b01111111111111111111111111111111;
+  dec2.bits[3] = 0;
+  set_cap(&dec1, 4);
+  set_cap(&dec2, 6);
+  int res = s21_is_equal(&dec1, &dec2);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_equal_test13
+  s21_decimal dec1 = {0, 1, 0, 0};
+  dec1.bits[0] = 0b11111111111111111111111111111111;
+  dec1.bits[1] = 0b11111111111111111111111111111111;
+  dec1.bits[2] = 0b01111111111111111111111111111111;
+  dec1.bits[3] = 0;
+
+  s21_decimal dec2 = {0, 1, 0, 0};
+  dec2.bits[0] = 0b11111111111111111111111111111111;
+  dec2.bits[1] = 0b11111111111111111111111111111111;
+  dec2.bits[2] = 0b01111111111111111111111111111111;
+  dec2.bits[3] = 0;
+  set_cap(&dec1, 6);
+  set_cap(&dec2, 4);
+  int res = s21_is_equal(&dec1, &dec2);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_equal_test14
+  s21_decimal dec1 = {0, 1, 0, 0};
+  dec1.bits[0] = 0b00000000000000000000000000000000;
+  dec1.bits[1] = 0b11111011111111111111111111111111;
+  dec1.bits[2] = 0b01111011111111111111111111111111;
+  dec1.bits[3] = 0;
+
+  s21_decimal dec2 = {0, 1, 0, 0};
+  dec2.bits[0] = 0b11111111111111101111111111111111;
+  dec2.bits[1] = 0b11111111111111101111111111111111;
+  dec2.bits[2] = 0b01111111111111101111111111111111;
+  dec2.bits[3] = 0;
+  int res = s21_is_equal(&dec1, &dec2);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_equal_test2
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res1 = s21_is_equal(&a, &b);
+  ck_assert_int_eq(res1, 1);
+
+#test s21_is_equal_test3
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_equal(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_equal_test4
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  int res = s21_is_equal(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_equal_test5
+  s21_decimal a = {{0, 52, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  int res = s21_is_equal(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_equal_test6
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{1747, 0, 1, 0}};
+  int res = s21_is_equal(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_equal_test7
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{1747, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  int res = s21_is_equal(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_equal_test10
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{1747, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_equal(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_equal_test8
+  s21_decimal a = {0};
+  s21_decimal b = {0};
+  s21_touchbit(&a, 1, 3);
+  s21_touchbit(&b, 1, 3);
+  int res = s21_is_equal(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_equal_test9
+  s21_decimal a = {0};
+  s21_decimal b = {0};
+  int res = s21_is_equal(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+
+
+#test s21_is_greater_or_equal_test1
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  int res = s21_is_greater_or_equal(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_greater_or_equal_test2
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  int res = s21_is_greater_or_equal(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_greater_or_equal_test3
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  int res = s21_is_greater_or_equal(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_greater_or_equal_test4
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_greater_or_equal(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_greater_or_equal_test5
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_greater_or_equal(&b, &a);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_greater_or_equal_test6
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_greater_or_equal(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_greater_or_equal_test7
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  int res = s21_is_greater_or_equal(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_greater_or_equal_test8
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_greater_or_equal(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+
+
+#test s21_is_greater_test1
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  int res = s21_is_greater(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_greater_test2
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  int res = s21_is_greater(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_greater_test3
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  int res = s21_is_greater(&b, &a);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_greater_test4
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_greater(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_greater_test5
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_greater(&b, &a);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_greater_test6
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_greater(&b, &a);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_greater_test7
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  set_cap(&a, 5);
+  set_cap(&b, 3);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_greater(&b, &a);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_greater_test8
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  set_cap(&a, 5);
+  set_cap(&b, 3);
+  int res = s21_is_greater(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+
+
+#test s21_is_less_or_equal_test1
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  int res = s21_is_less_or_equal(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_less_or_equal_test2
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  int res = s21_is_less_or_equal(&b, &a);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_less_or_equal_test3
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  int res = s21_is_less_or_equal(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_less_or_equal_test4
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_less_or_equal(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_less_or_equal_test5
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_less_or_equal(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_less_or_equal_test6
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_less_or_equal(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_less_or_equal_test7
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  int res = s21_is_less_or_equal(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+
+
+#test s21_is_less_test1
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  int res = s21_is_less(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_less_test2
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  int res = s21_is_less(&b, &a);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_less_test3
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_less(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_less_test4
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_less(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_less_test5
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_less(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_less_test6
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_less(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_less_test7
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  int res = s21_is_less(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+
+#test s21_is_less_test8
+  s21_decimal a = {{0, 0, 3, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  set_cap(&a, 5);
+  set_cap(&b, 3);
+  s21_touchbit(&a, 128, 0);
+  s21_touchbit(&a, 128, 0);
+  int res = s21_is_less(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_less_test9
+  s21_decimal a = {{0, 0, 3, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  set_cap(&a, 3);
+  set_cap(&b, 3);
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&a, 128, 1);
+  int res = s21_is_less(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+
+#test s21_is_not_equal_test1
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  int res = s21_is_not_equal(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_not_equal_test2
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  int res = s21_is_not_equal(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_not_equal_test3
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  int res = s21_is_not_equal(&b, &a);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_not_equal_test4
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_not_equal(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_not_equal_test5
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 2, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_not_equal(&b, &a);
+  ck_assert_int_eq(res, 1);
+
+#test s21_is_not_equal_test6
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  s21_touchbit(&b, 128, 1);
+  int res = s21_is_not_equal(&a, &b);
+  ck_assert_int_eq(res, 0);
+
+#test s21_is_not_equal_test7
+  s21_decimal a = {{0, 0, 1, 0}};
+  s21_decimal b = {{0, 0, 1, 0}};
+  s21_touchbit(&a, 128, 1);
+  int res = s21_is_not_equal(&a, &b);
+  ck_assert_int_eq(res, 1);
+
+
+#test s21_from_decimal_to_float_test1
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 1234567;
+  a.bits[1] = 0;
+  a.bits[2] = 0;
+  a.bits[3] = 3;
+  s21_from_decimal_to_float(a, &res);
+  ck_assert_float_eq_tol(res, 1234.567, 1e7);
+
+
+#test s21_from_decimal_to_float_test2
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 0b11111111111111111111111111111111;
+  a.bits[1] = 0b11111111111111111111111111111111;
+  a.bits[2] = 0b11111111111111111111111111111111;
+  a.bits[3] = 0;
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, 79228162514264337593543950336.0f);
+
+
+#test s21_from_decimal_to_float_test3
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 457865;
+  a.bits[1] = 0;
+  a.bits[2] = 0;
+  a.bits[3] = 2147483648;
+  set_cap(&a, 3);
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, -457.865);
+
+
+#test s21_from_decimal_to_float_test4
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 1905;
+  a.bits[1] = 0;
+  a.bits[2] = 0;
+  a.bits[3] = 2147483648;
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, -1905);
+
+
+#test s21_from_decimal_to_float_test5
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 0xFFFFF;
+  a.bits[1] = 0;
+  a.bits[2] = 0;
+  a.bits[3] = 0;
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, 1048575);
+
+
+#test s21_from_decimal_to_float_test6
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 4364764;
+  a.bits[1] = 0;
+  a.bits[2] = 0;
+  a.bits[3] = 2147483648;
+  set_cap(&a, 8);
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq_tol(res, -0.4364764, 1e7);
+
+
+#test s21_from_decimal_to_float_test7
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = INT_MAX;
+  a.bits[1] = INT_MAX;
+  a.bits[2] = 0;
+  a.bits[3] = 0;
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, pow(2, 63) - 1);
+
+
+#test s21_from_decimal_to_float_test8
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 378492087;
+  a.bits[1] = 0;
+  a.bits[2] = 0;
+  a.bits[3] = 0;
+  set_cap(&a, 10);
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, 0.0378492087);
+
+
+#test s21_from_decimal_to_float_test9
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 2021;
+  a.bits[1] = 0;
+  a.bits[2] = 0;
+  a.bits[3] = 2147483648;
+  set_cap(&a, 28);
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, -2.021e-25);
+
+
+#test s21_from_decimal_to_float_test10
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 0;
+  a.bits[1] = 0;
+  a.bits[2] = 0;
+  a.bits[3] = 2147483648;
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, -0);
+
+
+#test s21_from_decimal_to_float_test11
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 0b11111111111111111111111111111111;
+  a.bits[1] = 0;
+  a.bits[2] = 0;
+  a.bits[3] = 2147483648;
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, -4294967295);
+
+
+#test s21_from_decimal_to_float_test12
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 0b11111111111111111111111111111111;
+  a.bits[1] = 0;
+  a.bits[2] = 0;
+  a.bits[3] = 2147483648;
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, -4294967295);
+
+
+#test s21_from_decimal_to_float_test13
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = INT_MAX;
+  a.bits[1] = INT_MAX;
+  a.bits[2] = INT_MAX;
+  a.bits[3] = 0;
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, pow(2, 95) - 1);
+
+#test s21_from_decimal_to_float_test14
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 0b00000000010100111001000011000010;
+  a.bits[1] = 0b00000000000000000000000000000000;
+  a.bits[2] = 0b00000000000000000000000000000000;
+  a.bits[3] = 0b00000000000000010000000000000000;
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq_tol(res, 54675.46, 1e7);
+
+#test s21_from_decimal_to_float_test15
+  s21_decimal a;
+  float res = 0.0;
+  a.bits[0] = 0b00000000000000001011010101110101;
+  a.bits[1] = 0b00000000000000000000000000000000;
+  a.bits[2] = 0b00000000000000000000000000000000;
+  a.bits[3] = 0b10000000000001010000000000000000;
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &res), 0);
+  ck_assert_float_eq(res, -0.46453);
+
+#test s21_from_decimal_to_float_test16
+  s21_decimal a;
+  float res = 0;
+  a.bits[0] = 0b01100101101110011011001110011111;
+  a.bits[1] = 0b00000000000000000000000010000011;
+  a.bits[2] = 0b00000000000000000000000000000000;
+  a.bits[3] = 0b00000000000010010000000000000000;
+  s21_from_decimal_to_float(a, &res);
+  ck_assert_float_eq_tol(res, 564.3473, 1e7);
+
+
+//checkmk clean_mode=1 test.check > s21_test.c
