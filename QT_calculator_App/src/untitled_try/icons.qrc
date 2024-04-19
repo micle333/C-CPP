@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/buttonIcons">
+        <file>GraphIcon.png</file>
+        <file>source/+_-.png</file>
+        <file>source/%.png</file>
+        <file>source/AC.png</file>
+        <file>source/del.png</file>
+        <file>source/equal.png</file>
+        <file>source/minus.png</file>
+        <file>source/multip.png</file>
+        <file>source/plus.png</file>
+        <file>source/coma_left.png</file>
+        <file>source/(_.png</file>
+        <file>source/)_.png</file>
+        <file>source/deletion.png</file>
+        <file>source/delnum.png</file>
+        <file>credit_icon.png</file>
+        <file>credit.png</file>
+        <file>deposit.png</file>
+        <file>stepen.png</file>
+        <file>step.png</file>
+    </qresource>
+</RCC>
