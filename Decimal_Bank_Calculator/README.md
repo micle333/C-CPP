@@ -4,9 +4,6 @@
 
 In this project you will implement the s21_decimal.h library in the C programming language. This library should add the ability to work with the "decimal" type, which is not in the language standard. Nevertheless, this type is critically important. For financial calculations, for example, where errors of calculations characteristic of types with floating point are unacceptable. As part of the project you will work with the tasks of processing financial information, dive into the issues of internal representation of different types of data, and solidify knowledge of structured programming.
 
-
-## Chapter II
-
 ## Information
 
 The Decimal value type represents decimal numbers ranging from positive 79,228,162,514,264,337,593,543,950,335 to negative 79,228,162,514,264,337,593,543,950,335. The default value of a Decimal is 0. The Decimal value type is appropriate for financial calculations that require large numbers of significant integral and fractional digits and no round-off errors. The Decimal type does not eliminate the need for rounding. Rather, it minimizes errors due to rounding.
